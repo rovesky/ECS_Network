@@ -1,0 +1,14 @@
+{
+  "name": "com.footstone.ecs-network",
+  "displayName": "ECS Network",
+  "version": "0.0.1",
+  "unity": "2019.1",
+  "unityRelease": "0f1",
+  "dependencies": {},
+  "description": "The Entities package provides a modern Entity Component System (ECS) implementation with a basic set of systems and components made for Unity.",
+  "keywords": [
+    "ecs",
+    "network",
+    "unity"
+  ]
+}
