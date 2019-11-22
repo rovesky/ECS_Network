@@ -5,7 +5,7 @@ using UnityEngine;
 using NetworkCompression;
 using UnityEngine.Profiling;
 using Unity.Collections.LowLevel.Unsafe;
-using FootStone.ECS;
+//using FootStone.ECS;
 
 public interface ISnapshotGenerator
 {
@@ -98,9 +98,9 @@ unsafe public class NetworkServer
 
     public ServerInfo serverInfo;
 
-    unsafe public NetworkServer()
+    unsafe public NetworkServer(IGameTime gameTime)
     {
-
+        this.gameTime = gameTime;
          m_Transport = new SocketTransport(NetworkConfig.serverPort.IntValue, serverMaxClients.IntValue);
 
       //  m_Transport = new SocketTransport(7913, 8);
@@ -406,7 +406,7 @@ unsafe public class NetworkServer
 
         long startTick = 0;
         if (NetworkServer.print_senddata_time.IntValue > 0)
-            startTick = GameWorld.Active.Clock.ElapsedTicks;
+            startTick = gameTime.ElapsedTicks;
 
         foreach (var pair in m_Connections)
         {
@@ -414,10 +414,10 @@ unsafe public class NetworkServer
             switch (NetworkConfig.ioStreamType)
             {
                 case NetworkCompression.IOStreamType.Raw:
-                    pair.Value.SendPackage<RawOutputStream>(m_NetworkCompressionCapture);
+                    pair.Value.SendPackage<RawOutputStream>(m_NetworkCompressionCapture,gameTime);
                     break;
                 case NetworkCompression.IOStreamType.Huffman:
-                    pair.Value.SendPackage<HuffmanOutputStream>(m_NetworkCompressionCapture);
+                    pair.Value.SendPackage<HuffmanOutputStream>(m_NetworkCompressionCapture, gameTime);
                     break;
                 default:
                     GameDebug.Assert(false);
@@ -428,7 +428,7 @@ unsafe public class NetworkServer
 
         if (NetworkServer.print_senddata_time.IntValue > 0)
         {
-            long stopTick = GameWorld.Active.Clock.ElapsedTicks;
+            long stopTick =gameTime.ElapsedTicks;
             long ticksPerSecond = System.Diagnostics.Stopwatch.Frequency;
             accumSendDataTicks += stopTick - startTick;
 
@@ -436,7 +436,7 @@ unsafe public class NetworkServer
             {
                 GameDebug.Log("SendData Time per second: " + accumSendDataTicks * 1000.0 / ticksPerSecond);
                 accumSendDataTicks = 0;
-                lastUpdateTick = GameWorld.Active.Clock.ElapsedTicks;
+                lastUpdateTick = gameTime.ElapsedTicks;
             }
         }
 
@@ -716,13 +716,13 @@ unsafe public class NetworkServer
                 ReadEvents(ref input, loop);
         }
 
-        public void SendPackage<TOutputStream>(NetworkCompressionCapture networkCompressionCapture) where TOutputStream : struct, NetworkCompression.IOutputStream
+        public void SendPackage<TOutputStream>(NetworkCompressionCapture networkCompressionCapture,IGameTime gameTime) where TOutputStream : struct, NetworkCompression.IOutputStream
         {
             // Check if we can and should send new package
 
             var rawOutputStream = new BitOutputStream(m_PackageBuffer);
 
-            var canSendPackage = CanSendPackage(ref rawOutputStream);
+            var canSendPackage = CanSendPackage(ref rawOutputStream, gameTime);
             if (!canSendPackage)
             {
                 //GameDebug.Log("SERVER: Choked by missing acks from client!");
@@ -735,7 +735,7 @@ unsafe public class NetworkServer
                 return;
 
             // Respect max bps rate cap
-            if (GameWorld.Active.FrameTime < nextOutPackageTime)
+            if (gameTime.FrameTime < nextOutPackageTime)
                 return;
 
             ServerPackageInfo packageInfo;
@@ -802,7 +802,7 @@ unsafe public class NetworkServer
                 if (timeLimitBPS > (float)snapshotInterval / serverTickRate.FloatValue)
                 {
                     GameDebug.Log("SERVER: Choked by BPS sending " + messageSize);
-                    nextOutPackageTime = GameWorld.Active.FrameTime + timeLimitBPS;
+                    nextOutPackageTime = gameTime.FrameTime + timeLimitBPS;
                 }
             }
         }
@@ -1385,6 +1385,8 @@ unsafe public class NetworkServer
     WorldSnapshot[] m_Snapshots;
     uint* m_Prediction;
     int m_PredictionIndex;
+
+    private IGameTime gameTime;
 
     public int statsSnapshotData;
     public int statsGeneratedEntitySnapshots;

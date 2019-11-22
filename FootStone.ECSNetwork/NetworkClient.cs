@@ -118,8 +118,9 @@ public class NetworkClient
     public delegate void EntityDespawnProcessor(int id);
     public delegate void EntityUpdateProcessor(int id, ref NetworkReader data);
 
-    public NetworkClient(/*INetworkTransport transport*/)
+    public NetworkClient(/*INetworkTransport transport*/IGameTime gameTime)
     {
+        this.gameTime = gameTime;
         m_Transport = new SocketTransport();
         clientConfig = new ClientConfig();
     }
@@ -264,10 +265,10 @@ public class NetworkClient
         switch (NetworkConfig.ioStreamType)
         {
             case NetworkCompression.IOStreamType.Raw:
-                m_Connection.SendPackage<RawOutputStream>();
+                m_Connection.SendPackage<RawOutputStream>(gameTime);
                 break;
             case NetworkCompression.IOStreamType.Huffman:
-                m_Connection.SendPackage<HuffmanOutputStream>();
+                m_Connection.SendPackage<HuffmanOutputStream>(gameTime);
                 break;
             default:
                 GameDebug.Assert(false);
@@ -467,14 +468,14 @@ public class NetworkClient
             counters.packageContentStatsPackageSequence = packageSequence;
         }
 
-        public void SendPackage<TOutputStream>() where TOutputStream : struct, NetworkCompression.IOutputStream
+        public void SendPackage<TOutputStream>(IGameTime gameTime) where TOutputStream : struct, NetworkCompression.IOutputStream
         {
             // We don't start sending updates before we have received at 
             // least one content package from the server
 
             var rawOutputStream = new BitOutputStream(m_PackageBuffer);
 
-            if (inSequence == 0 || !CanSendPackage(ref rawOutputStream))
+            if (inSequence == 0 || !CanSendPackage(ref rawOutputStream,gameTime))
                 return;
 
             // Only if there is anything to send
@@ -1126,10 +1127,11 @@ public class NetworkClient
         List<int> m_TempSpawnList = new List<int>();
 
         CommandInfo defaultCommandInfo = new CommandInfo();
-
+       
     }
 
     Dictionary<ushort, NetworkEventType> m_EventTypesOut = new Dictionary<ushort, NetworkEventType>();
     INetworkTransport m_Transport;
     ClientConnection m_Connection;
+    private IGameTime gameTime;
 }

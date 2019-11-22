@@ -174,7 +174,7 @@ public static class NetworkUtils
     }
 }
 
-class ByteArrayComp : IEqualityComparer<byte[]>, IComparer<byte[]>
+public class ByteArrayComp : IEqualityComparer<byte[]>, IComparer<byte[]>
 {
     public static readonly ByteArrayComp instance = new ByteArrayComp();
 

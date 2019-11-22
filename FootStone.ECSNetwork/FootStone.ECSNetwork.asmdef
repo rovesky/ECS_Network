@@ -4,7 +4,8 @@
     "Unity.Collections",
     "Unity.Mathematics",
     "Unity.Mathematics.Extensions",
-    "Unity.Networking.Transport"
+    "Unity.Networking.Transport",
+    "FootStone.ECSUtils"
   ],
   "optionalUnityReferences": [],
   "includePlatforms": [],

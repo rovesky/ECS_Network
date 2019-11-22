@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using NetworkCompression;
 using UnityEngine.Profiling;
-using FootStone.ECS;
+//using FootStone.ECS;
 
 public class NetworkConnectionCounters
 {
@@ -125,7 +125,7 @@ public class NetworkConnection<TCounters, TPackageInfo>
     {
     }
 
-    protected bool CanSendPackage(ref BitOutputStream output)
+    protected bool CanSendPackage(ref BitOutputStream output,IGameTime gameTime)
     {
         if (!outstandingPackages.Available(outSequence)) // running out here means we hit 64 packs without any acks from client...
         {
@@ -134,9 +134,9 @@ public class NetworkConnection<TCounters, TPackageInfo>
             // sending messages but potentially it could also happen in extreme cases of congestion or package loss. 
             // We will try to send empty packages with low frequency to see if we can get the connection up and running again
 
-            if(GameWorld.Active.FrameTime >= chokedTimeToNextPackage)
+            if(gameTime.FrameTime >= chokedTimeToNextPackage)
             {
-                chokedTimeToNextPackage = GameWorld.Active.FrameTime + NetworkConfig.netChokeSendInterval.FloatValue;
+                chokedTimeToNextPackage = gameTime.FrameTime + NetworkConfig.netChokeSendInterval.FloatValue;
 
                 // Treat the last package as lost
                 int chokedSequence;
