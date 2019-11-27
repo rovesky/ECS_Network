@@ -19,7 +19,7 @@ public interface IClientCommandProcessor
     void ProcessCommand(int connectionId, int tick, ref NetworkReader data);
 }
 
-unsafe public class NetworkServer
+public unsafe class NetworkServer
 {
     [ConfigVar(Name = "server.debug", DefaultValue = "0", Description = "Enable debug printing of server handshake etc.", Flags = ConfigVar.Flags.None)]
     public static ConfigVar serverDebug;
