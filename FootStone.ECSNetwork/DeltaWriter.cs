@@ -1,4 +1,5 @@
-﻿using Unity.Collections.LowLevel.Unsafe;
+﻿using FootStone.ECS;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 

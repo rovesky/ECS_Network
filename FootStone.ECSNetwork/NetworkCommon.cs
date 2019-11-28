@@ -1,4 +1,5 @@
 ﻿
+using FootStone.ECS;
 using Unity.Networking.Transport;
 
 public struct TransportEvent

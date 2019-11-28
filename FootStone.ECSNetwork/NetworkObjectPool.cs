@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 

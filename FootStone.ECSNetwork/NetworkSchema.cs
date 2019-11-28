@@ -4,6 +4,7 @@ using System.Diagnostics;
 using UnityEngine;
 using NetworkCompression;
 using Unity.Collections.LowLevel.Unsafe;
+using FootStone.ECS;
 
 unsafe public class NetworkSchema
 {

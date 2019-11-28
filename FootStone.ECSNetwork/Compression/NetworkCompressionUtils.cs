@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FootStone.ECS;
+using UnityEngine;
 
 namespace NetworkCompression
 {

@@ -4,6 +4,7 @@ using UnityEngine;
 using NetworkCompression;
 using UnityEngine.Profiling;
 using System.Net;
+using FootStone.ECS;
 
 public interface ISnapshotConsumer
 {

@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using NetworkCompression;
 using UnityEngine.Profiling;
+using FootStone.ECS;
 //using FootStone.ECS;
 
 public class NetworkConnectionCounters

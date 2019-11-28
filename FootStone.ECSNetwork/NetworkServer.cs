@@ -5,6 +5,7 @@ using UnityEngine;
 using NetworkCompression;
 using UnityEngine.Profiling;
 using Unity.Collections.LowLevel.Unsafe;
+using FootStone.ECS;
 //using FootStone.ECS;
 
 public interface ISnapshotGenerator

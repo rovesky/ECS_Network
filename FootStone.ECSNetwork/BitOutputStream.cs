@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FootStone.ECS;
+using System;
 using UnityEngine;
 
 public struct BitOutputStream
