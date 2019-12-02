@@ -8,9 +8,9 @@ using FootStone.ECS;
 
 public interface ISnapshotConsumer
 {
-    void ProcessEntityDespawns(int serverTime, List<int> despawns);
-    void ProcessEntitySpawn(int serverTime, int id, ushort typeId);
-    void ProcessEntityUpdate(int serverTime, int id, ref NetworkReader reader);
+    void ProcessEntityDespawns(int serverTick, List<int> despawns);
+    void ProcessEntitySpawn(int serverTick, int id, ushort typeId);
+    void ProcessEntityUpdate(int serverTick, int id, ref NetworkReader reader);
 }
 
 public interface INetworkClientCallbacks : INetworkCallbacks
