@@ -13,7 +13,15 @@ public class SocketTransport : INetworkTransport
     public SocketTransport(int port = 0, int maxConnections = 16)
     {
         m_IdToConnection = new NativeArray<NetworkConnection>(maxConnections, Allocator.Persistent);
-        m_Socket = new UdpNetworkDriver(new NetworkDataStreamParameter { size = 10 * NetworkConfig.maxPackageSize }, new NetworkConfigParameter { disconnectTimeoutMS = serverDisconnectTimeout.IntValue });
+        m_Socket = new UdpNetworkDriver(new NetworkDataStreamParameter
+        {
+            size = 10 * NetworkConfig.maxPackageSize
+        }, new NetworkConfigParameter
+        {
+            connectTimeoutMS = 3000,
+            maxConnectAttempts = 10,
+            disconnectTimeoutMS = serverDisconnectTimeout.IntValue
+        });
 
         var serverEndpoint = NetworkEndPoint.AnyIpv4;
         serverEndpoint.Port = (ushort)port;
