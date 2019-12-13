@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using Unity.Networking.Transport;
 using Unity.Collections;
-using UdpNetworkDriver = Unity.Networking.Transport.BasicNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket>;
+//using UdpNetworkDriver = Unity.Networking.Transport.GenericNetworkDriver<Unity.Networking.Transport.IPv4UDPSocket, Unity.Networking.Transport.DefaultPipelineStageCollection>;
 using EventType = Unity.Networking.Transport.NetworkEvent.Type;
-using NetworkEvent = Unity.Networking.Transport.NetworkEvent;
 using FootStone.ECS;
 
 public class SocketTransport : INetworkTransport
@@ -14,16 +13,19 @@ public class SocketTransport : INetworkTransport
     public SocketTransport(int port = 0, int maxConnections = 16)
     {
         m_IdToConnection = new NativeArray<NetworkConnection>(maxConnections, Allocator.Persistent);
-        m_Socket = new UdpNetworkDriver(new NetworkDataStreamParameter { size = 10 * NetworkConfig.maxPackageSize }, new NetworkConfigParameter { disconnectTimeout = serverDisconnectTimeout.IntValue });
-        m_Socket.Bind(new IPEndPoint(IPAddress.Any, port));
+        m_Socket = new UdpNetworkDriver(new NetworkDataStreamParameter { size = 10 * NetworkConfig.maxPackageSize }, new NetworkConfigParameter { disconnectTimeoutMS = serverDisconnectTimeout.IntValue });
 
+        var serverEndpoint = NetworkEndPoint.AnyIpv4;
+        serverEndpoint.Port = (ushort)port;
+        m_Socket.Bind(serverEndpoint);
         if (port != 0)
             m_Socket.Listen();
     }
 
     public int Connect(string ip, int port)
     {
-        var connection = m_Socket.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
+        var serverEndpoint = NetworkEndPoint.Parse(ip, (ushort) port);
+        var connection = m_Socket.Connect(serverEndpoint);
         m_IdToConnection[connection.InternalId] = connection;
         return connection.InternalId;
     }
@@ -96,7 +98,7 @@ public class SocketTransport : INetworkTransport
         using (var sendStream = new DataStreamWriter(sendSize, Allocator.Persistent))
         {
             sendStream.Write(data, sendSize);
-            m_Socket.Send(m_IdToConnection[connectionId], sendStream);
+            m_Socket.Send(NetworkPipeline.Null,m_IdToConnection[connectionId], sendStream);
         }
     }
 
@@ -112,6 +114,6 @@ public class SocketTransport : INetworkTransport
     }
 
     byte[] m_Buffer = new byte[1024 * 8];
-    BasicNetworkDriver<IPv4UDPSocket> m_Socket;
+    UdpNetworkDriver m_Socket;
     NativeArray<NetworkConnection> m_IdToConnection;
 }
