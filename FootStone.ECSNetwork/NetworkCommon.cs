@@ -112,7 +112,7 @@ public static class NetworkConfig
 
     public const int maxFixedSchemaIds = 2;
     public const int maxEventTypeSchemaIds = 8;
-    public const int maxEntityTypeSchemaIds = 40;
+    public const int maxEntityTypeSchemaIds = 100;
 
     public const int networkClientQueueCommandSchemaId = 0;
     public const int mapSchemaId = 1;
