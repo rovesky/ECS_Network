@@ -591,8 +591,9 @@ public unsafe class NetworkServer
             if (predictingClientId == connectionId)
                 mask |= 0x1;
             else
-            //    mask |= 0x2;
-                mask |= 0x1;
+              //  mask = 0;
+                mask |= 0x2;
+          
             return mask;
         }
     }
